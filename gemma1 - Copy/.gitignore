@@ -1,0 +1,41 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Generated files
+debug.log
+*.log
+metrics_visualization.png
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Virtual environments
+.venv/
+venv/
+ENV/
+env/
+
+# Model files (keep structure, ignore large files)
+models/**/*.pt
+models/**/*.safetensors
+models/**/*.bin
+*.pth
+*.ckpt
+
+# Temporary files
+*.tmp
+*.bak
+*.cache
+
