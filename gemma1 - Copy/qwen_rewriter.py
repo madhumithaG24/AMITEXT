@@ -72,8 +72,8 @@ class QwenRewriter:
             import gc
             gc.collect()
             
-            # Try with safetensors first (better for Windows), fallback if not available
-                     log_memory("before Qwen load")
+                        # Load Qwen in bfloat16 to halve memory use
+            log_memory("before Qwen load")
 
             try:
                 self.model = AutoModelForCausalLM.from_pretrained(
