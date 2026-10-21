@@ -50,7 +50,7 @@ Rewritten text (non-offensive, no contradiction, one sentence):"""
 )
 
 class QwenRewriter:
-    def __init__(self, device: str = "cpu", max_new_tokens: int = 96) -> None:
+    def __init__(self, device: str = "cpu", max_new_tokens: int = 64) -> None:
         self.device = device
         self.max_new_tokens = max_new_tokens
         
@@ -86,13 +86,7 @@ class QwenRewriter:
             self.model.to(self.device)
             self.model.eval()
             
-            # Ensure model is properly initialized
-            with torch.no_grad():
-                # Test forward pass to ensure memory is valid
-                dummy_input = self.tokenizer("test", return_tensors="pt").to(self.device)
-                if dummy_input['input_ids'].numel() > 0:
-                    _ = self.model(**dummy_input)
-                    del dummy_input
+          
             
             # Cleanup after loading
             gc.collect()
