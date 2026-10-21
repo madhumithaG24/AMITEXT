@@ -187,7 +187,7 @@ class TextRewritingApp:
             best_score = -1e9
             
             try:
-                candidates_result = self.generate_multiple_versions(text, num_versions=5)
+                candidates_result = self.generate_multiple_versions(text, num_versions=2)
                 if candidates_result.get("success"):
                     versions = candidates_result.get("versions", [])
                 else:
