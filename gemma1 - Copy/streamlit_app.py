@@ -31,15 +31,8 @@ if sys.platform == "win32":
         torch.set_num_interop_threads(1)
     except RuntimeError:
         pass
-
 # Import main app
 from main import TextRewritingApp
-import torch.nn as nn
-from transformers import AutoModelForCausalLM
-try:
-    from trl.experimental.ppo import AutoModelForCausalLMWithValueHead
-except ImportError:
-    from trl.models import AutoModelForCausalLMWithValueHead
 from config import ppo_config
 
 class PPOUpdateTrainer:
