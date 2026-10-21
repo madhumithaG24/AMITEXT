@@ -3,6 +3,8 @@ Qwen2.5-0.5B-Instruct Rewriter (CPU-friendly)
 - Model: Qwen/Qwen2.5-0.5B-Instruct
 - Prompt enforces politeness/positivity and preserves meaning/intent
 """
+import gc
+import psutil  # installed automatically with accelerate
 
 import warnings
 warnings.filterwarnings("ignore")
@@ -48,7 +50,9 @@ Return ONLY the rewritten statement, concise and direct.
 Original text: {text}
 Rewritten text (non-offensive, no contradiction, one sentence):"""
 )
-
+def log_memory(label):
+    rss_gb = psutil.Process().memory_info().rss / (1024 ** 3)
+    print(f"[MEMORY] {label}: {rss_gb:.2f} GB", flush=True)
 class QwenRewriter:
     def __init__(self, device: str = "cpu", max_new_tokens: int = 64) -> None:
         self.device = device
@@ -69,24 +73,29 @@ class QwenRewriter:
             gc.collect()
             
             # Try with safetensors first (better for Windows), fallback if not available
+                     log_memory("before Qwen load")
+
             try:
                 self.model = AutoModelForCausalLM.from_pretrained(
-                    MODEL_NAME, 
-                    dtype=model_dtype,
+                    MODEL_NAME,
+                    dtype=torch.bfloat16,
                     low_cpu_mem_usage=True,
-                    use_safetensors=True  # Use safetensors for better Windows compatibility
+                    use_safetensors=True,
                 )
-            except Exception:
-                # Fallback without safetensors if not available
+            except TypeError:
+                # Older transformers versions call this argument torch_dtype
                 self.model = AutoModelForCausalLM.from_pretrained(
-                    MODEL_NAME, 
-                    dtype=model_dtype,
-                    low_cpu_mem_usage=True
+                    MODEL_NAME,
+                    torch_dtype=torch.bfloat16,
+                    low_cpu_mem_usage=True,
+                    use_safetensors=True,
                 )
+
+            gc.collect()
+            log_memory("after Qwen load")
+
             self.model.to(self.device)
             self.model.eval()
-            
-          
             
             # Cleanup after loading
             gc.collect()
